@@ -1,3 +1,3 @@
 # SCAI
 
-Kevin Bachelor, Daksh Shah, Sean Singh, Jack
+Kevin Bachelor, Daksh Shah, Sean Singh, Jack Hansen
