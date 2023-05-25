@@ -203,6 +203,7 @@ print("input size :", inputSize)
 print("output size :", outputSize)
 waveModel.trainn(150, trainLoader, validateLoader)
 
+
 waveModel.test(testLoader, testSplit, solovs)
 
 # Analyze Training success w/ matplotlib
