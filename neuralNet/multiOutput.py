@@ -5,30 +5,29 @@ import pandas as pd
 import numpy as np
 from torch.utils.data import random_split, TensorDataset, DataLoader
 import math
+from typing import List
 
 globTrainLoss = []
 
 class generalModel(torch.nn.Module):
     # Initialize model
-    def __init__(self, inputSize, outputSizes, outputNums):
+    def __init__(self, inputSize, outputSizes: List[int], outputNums):
         super(generalModel, self).__init__()
         for i in outputNums:
-            self.linear1[i] = torch.nn.Linear(inputSize, 100)
-            self.linear2[i] = torch.nn.Linear(100, 50)
-            self.linear3[i] = torch.nn.Linear(50, outputSizes[i])
+            self.linear1 = torch.nn.Linear(inputSize, 100)
+            self.linear2 = torch.nn.Linear(100, 50)
+            self.linear3 = torch.nn.Linear(50, outputSizes)
 
         self.activation = torch.nn.ReLU()
         self.softmax = torch.nn.Softmax()
 
     # Send a tensor through the model
     def forward(self, x):
-        for i in range(0, len(x)):
-            x[i] = self.linear1[i](x[i])
-            x[i] = self.activation(x[i])
-            x[i] = self.linear2[i](x[i])
-            x[i] = self.activation(x[i])
-            x[i] = self.linear3[i](x[i])
-            x[i] = self.softmax(x[i])
+        x = self.linear1(x)
+        x = self.activation(x)
+        x = self.linear2(x)
+        x = self.activation(x)
+        x = self.linear3(x)
         return x
     
     # Saves model to file
