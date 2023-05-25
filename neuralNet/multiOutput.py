@@ -10,12 +10,12 @@ globTrainLoss = []
 
 class generalModel(torch.nn.Module):
     # Initialize model
-    def __init__(self, inputSize, outputSize):
+    def __init__(self, inputSize, outputSizes, outputNums):
         super(generalModel, self).__init__()
-        for i in outputSize:
+        for i in outputNums:
             self.linear1[i] = torch.nn.Linear(inputSize, 100)
             self.linear2[i] = torch.nn.Linear(100, 50)
-            self.linear3[i] = torch.nn.Linear(50, outputSize[i])
+            self.linear3[i] = torch.nn.Linear(50, outputSizes[i])
 
         self.activation = torch.nn.ReLU()
         self.softmax = torch.nn.Softmax()
@@ -151,7 +151,7 @@ for i in range(0, len(everythingDict)):
 
 # Creates Pandas dataframe for input and output
 df = pd.DataFrame(actualDict)
-input = df.loc[:, ['height', 'inundate']]
+input = df.loc[:, ['height']]
 output = df.loc[:, ['inundate', 'solov']]
 
 # Turns pandas dataframes into tensors and Tensor Dataset
