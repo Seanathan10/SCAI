@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 import random
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 df = pd.read_csv("SpotifyFeatures.csv", na_filter = False)
@@ -151,3 +153,17 @@ def generate_random_playlist(num_songs: int, initial=-1):
 def display_playlist(playlist):
     for song in playlist:
         print("{0:50}{1:30}{2:30}".format(song["track_name"], song["artist_name"], song["genre"]))
+
+def plot_error():
+    rows, cols = 3, 3
+    fig, axes = plt.subplots(rows,cols)
+
+    for i in range(rows):
+        for j in range(cols):
+            song = df.iloc[RANDOM_IND()]
+            errors = df.sample(10000).apply(lambda other: error(song, other), axis=1, result_type='expand')
+            errors[0].plot.hist(column=[0], bins=50, ax=axes[i][j], xlim=(0,5))
+            genre = song["genre"]
+            axes[i][j].set_title(f"{genre}")
+    
+    plt.show()
