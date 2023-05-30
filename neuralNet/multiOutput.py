@@ -21,6 +21,7 @@ class generalModel(torch.nn.Module):
     # Send a tensor through the model
     def forward(self, x):
         x = self.linear1(x)
+        # print("\n\n\ntestIIIIIIIIIING\n\n\n", x)
         x = self.activation(x)
         x = self.linear2(x)
         x = self.activation(x)
@@ -42,7 +43,7 @@ class generalModel(torch.nn.Module):
     # Function for training the model
     def trainn(self, numEpochs, trainLoader, validateLoader):
         lossFn = torch.nn.MSELoss()
-        optimizer = torch.optim.Adam(self.parameters(), lr=0.001, weight_decay=0.0001)
+        optimizer = torch.optim.Adam(self.parameters(), lr=0.01, weight_decay=0.0001)
         bestAccuracy = 0.0
         
         print("Training with", numEpochs, "epochs...")
@@ -60,8 +61,6 @@ class generalModel(torch.nn.Module):
                 optimizer.zero_grad()
                 predictedOutputs = self.forward(inputs)
                 # Sets up and uses backpropogation to optimize
-                print("predicted outputs : ", predictedOutputs)
-                print("Outputs :", outputs)
                 trainLoss = lossFn(predictedOutputs, outputs)
                 trainLoss.backward()
                 optimizer.step()
@@ -74,11 +73,10 @@ class generalModel(torch.nn.Module):
                 self.eval()
                 for data in validateLoader:
                     inputs, outputs = data
-                    print(outputs[:, 0])
                     outputs = outputs.long()
                     # Gets values for loss
                     predictedOutputs = self(inputs)
-                    valLoss = lossFn(predictedOutputs, outputs[:, 0])
+                    valLoss = lossFn(predictedOutputs, outputs)
                     # Highest value will be our prediction
                     _, predicted = torch.max(predictedOutputs, 1)
                     runningValLoss += valLoss.item()
@@ -196,7 +194,7 @@ print("Output size :",outputSize)
 waveModel = generalModel(inputSize, outputSize)
 
 # Train model
-waveModel.trainn(150, trainLoader, validateLoader)
+waveModel.trainn(1500, trainLoader, validateLoader)
 
 
 waveModel.test(testLoader, testSplit, solovs)
