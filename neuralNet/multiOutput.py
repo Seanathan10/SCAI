@@ -56,11 +56,9 @@ class generalModel(torch.nn.Module):
             # Actually trains
             for data in trainLoader:
                 inputs, outputs = data
-                outputs = outputs
                 # Zero param gradients
                 optimizer.zero_grad()
                 predictedOutputs = self.forward(inputs)
-                predictedOutputs = predictedOutputs
                 # Sets up and uses backpropogation to optimize
                 print("predicted outputs : ", predictedOutputs)
                 print("Outputs :", outputs)
