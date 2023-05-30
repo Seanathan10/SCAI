@@ -80,8 +80,9 @@ class generalModel(torch.nn.Module):
                 predictedOutputs = self.forward(inputs)
                 # Sets up and uses backpropogation to optimize
                 trainLoss = lossFn(predictedOutputs, outputs[:, 0])
+                trainLoss.backward()
                 optimizer.step()
-                # Gets loss of all of this
+                #Gets loss of all of this
                 runningTrainingLoss += trainLoss.item()
 
             trainLossValue = runningTrainingLoss/len(trainLoader)
@@ -120,6 +121,7 @@ class generalModel(torch.nn.Module):
             globTrainLoss.append(trainLossValue)
             print("Completed training for epoch :", epoch, 'Training Loss is %.4f' %trainLossValue, 'Validation Loss is: %.4f' %valLossValue, 'Accuracy is %d %%' % (accuracy))
 
+    # Tests the model accuracy over a number of samples
     def test(self, testLoader, testSplit, solovs):
         runningAccuracy = 0
         total = 0

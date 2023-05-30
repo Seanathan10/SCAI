@@ -5,21 +5,18 @@ import pandas as pd
 import numpy as np
 from torch.utils.data import random_split, TensorDataset, DataLoader
 import math
-from typing import List
 
 globTrainLoss = []
 
 class generalModel(torch.nn.Module):
     # Initialize model
-    def __init__(self, inputSize, outputSizes: List[int], outputNums):
+    def __init__(self, inputSize, outputSize):
         super(generalModel, self).__init__()
-        for i in outputNums:
-            self.linear1 = torch.nn.Linear(inputSize, 100)
-            self.linear2 = torch.nn.Linear(100, 50)
-            self.linear3 = torch.nn.Linear(50, outputSizes)
+        self.linear1 = torch.nn.Linear(inputSize, 100)
+        self.linear2 = torch.nn.Linear(100, 50)
+        self.linear3 = torch.nn.Linear(50, outputSize)
 
-        self.activation = torch.nn.ReLU()
-        self.softmax = torch.nn.Softmax()
+        self.activation = torch.nn.LeakyReLU()
 
     # Send a tensor through the model
     def forward(self, x):
@@ -44,7 +41,7 @@ class generalModel(torch.nn.Module):
 
     # Function for training the model
     def trainn(self, numEpochs, trainLoader, validateLoader):
-        lossFn = torch.nn.CrossEntropyLoss()
+        lossFn = torch.nn.MSELoss()
         optimizer = torch.optim.Adam(self.parameters(), lr=0.001, weight_decay=0.0001)
         bestAccuracy = 0.0
         
@@ -59,12 +56,15 @@ class generalModel(torch.nn.Module):
             # Actually trains
             for data in trainLoader:
                 inputs, outputs = data
-                outputs = outputs.long()
+                outputs = outputs
                 # Zero param gradients
                 optimizer.zero_grad()
                 predictedOutputs = self.forward(inputs)
+                predictedOutputs = predictedOutputs
                 # Sets up and uses backpropogation to optimize
-                trainLoss = lossFn(predictedOutputs, outputs[:, 0])
+                print("predicted outputs : ", predictedOutputs)
+                print("Outputs :", outputs)
+                trainLoss = lossFn(predictedOutputs, outputs)
                 trainLoss.backward()
                 optimizer.step()
                 runningTrainingLoss += trainLoss.item()
@@ -155,19 +155,21 @@ output = df.loc[:, ['inundate', 'solov']]
 
 # Turns pandas dataframes into tensors and Tensor Dataset
 input = torch.Tensor(input.to_numpy())
-print(input)
+# print("input : ", input)
 output = torch.Tensor(output.to_numpy())
+# print("output : ", output)
+outputSize = torch.Tensor.dim(output)
 data = TensorDataset(input, output)
 
 # Split into a training, validation and testing set
 trainBatchSize = 10
 testSplit = int(len(input)*0.25)
-print(testSplit)
+# print(testSplit)
 trainSplit = int(len(input)*0.6)
-print(trainSplit)
+# print(trainSplit)
 validateSplit = len(input) - trainSplit - testSplit
-print(validateSplit)
-print(len(input))
+# print(validateSplit)
+# print(len(input))
 trainSet, validateSet, testSet = random_split(data, [trainSplit, validateSplit, testSplit])
 
 # Get data in loadable form to go into model
@@ -178,14 +180,10 @@ testLoader = DataLoader(testSet, batch_size=1)
 # Sets input and output size for future models
 print(input.shape)
 inputSize = list(input.shape)[1]
-print("input size :", inputSize)
 solovs = []
 for i in actualDict['solov']:
     if not i in solovs:
         solovs.append(i)
-    
-print("solovs :", solovs)
-outputSize = solovs
 
 
 # TRAINING AND TESTING MODEL!!!
@@ -195,11 +193,11 @@ outputSize = solovs
 # For loading current one
 # waveModel = generalModel.loadModel(inputSize, outputSize, "waveModel.pth")
 # For creating new one
+print("input size :", inputSize)
+print("Output size :",outputSize)
 waveModel = generalModel(inputSize, outputSize)
 
 # Train model
-print("input size :", inputSize)
-print("output size :", outputSize)
 waveModel.trainn(150, trainLoader, validateLoader)
 
 
