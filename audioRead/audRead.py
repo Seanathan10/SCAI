@@ -2,12 +2,13 @@ import numpy as np
 import audiosegment
 from os import system
 import matplotlib.pyplot as plt
+import os
 
 class audioMod():
     def songStats(audioFile):
         # converts an audio file to a numpy array
         fig = plt.figure(tight_layout=True)
-        song1 = (audiosegment.from_file(audioFile).resample(sample_rate_Hz=4000, channels=1, sample_width=2)).to_numpy_array()
+        song1 = (audiosegment.from_file(audioFile).resample(sample_rate_Hz=32000, channels=1, sample_width=2)).to_numpy_array()
         # return song
         song2 = song1[0::4000]
         song3 = np.fft.rfft(song1)
@@ -40,12 +41,20 @@ class audioMod():
             
         plt.show()
         
-    def toArr(audioFile):
-        song = (audiosegment.from_file(audioFile).resample(sample_rate_Hz=4000, channels=1, sample_width=2)).to_numpy_array()
-        return song
+    def toArr(audioFile, clean=False):
+        song = np.fft.rfft((audiosegment.from_file(audioFile).resample(sample_rate_Hz=32000, channels=1, sample_width=2)).to_numpy_array())
+        a = [0]*256
+        for i in range(0, len(song)):
+            if (song[i] > song[a[0]]):
+                a[0] = i
+                a = np.sort(a)
+        if(clean):
+            os.remove(audioFile)
+        return a
 
     def convertWav(audioFile):
         x = "ffmpeg -i " + audioFile + " -v quiet -codec:a libmp3lame -b:a 32k -n " + audioFile[:-3] + "wav"
         system(x)
+        os.remove(audioFile)
         
 # 4 samples, 100 size each. one at 0:10, 10 seconds before end, and 2 samples in the middle. Each 0.025 of a second
