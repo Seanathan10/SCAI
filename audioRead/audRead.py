@@ -53,8 +53,10 @@ class audioMod():
         return a
 
     def convertWav(audioFile):
-        x = "ffmpeg -i " + audioFile + " -v quiet -codec:a libmp3lame -b:a 32k -n " + audioFile[:-3] + "wav"
+        new_file = audioFile.replace(" ", "_")
+        os.rename(audioFile, audioFile.replace(" ", "_"))
+        x = "ffmpeg -i " + new_file + " -v quiet -codec:a libmp3lame -b:a 32k -n " + new_file[:-3] + "wav"
         system(x)
-        os.remove(audioFile)
+        os.remove(new_file)
         
 # 4 samples, 100 size each. one at 0:10, 10 seconds before end, and 2 samples in the middle. Each 0.025 of a second

@@ -2,4 +2,6 @@
 SpotifyFeatures.csv
 SCAI is No Limit S23.code-workspace
 samples
-__pycache__
+audRead.cpython-311.pyc
+audRead.cpython-39.pyc
+audRead.cpython-38.pyc
