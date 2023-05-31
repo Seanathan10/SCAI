@@ -105,6 +105,7 @@ class generalModel(torch.nn.Module):
                     # Adding up all the loss and all the accuracy over time
                     runningValLoss += valLoss.item()
                     total += outputs.size(0)
+                    print(outputs.size(0))
                     runningAccuracy += (predicted == outputs).sum().item()
             
             # Calculate Validation Loss Val

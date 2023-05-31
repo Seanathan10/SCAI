@@ -21,7 +21,6 @@ class generalModel(torch.nn.Module):
     # Send a tensor through the model
     def forward(self, x):
         x = self.linear1(x)
-        # print("\n\n\ntestIIIIIIIIIING\n\n\n", x)
         x = self.activation(x)
         x = self.linear2(x)
         x = self.activation(x)
@@ -42,7 +41,7 @@ class generalModel(torch.nn.Module):
 
     # Function for training the model
     def trainn(self, numEpochs, trainLoader, validateLoader):
-        lossFn = torch.nn.MSELoss()
+        lossFn = torch.nn.L1Loss()
         optimizer = torch.optim.Adam(self.parameters(), lr=0.01, weight_decay=0.0001)
         bestAccuracy = 0.0
         
@@ -73,15 +72,17 @@ class generalModel(torch.nn.Module):
                 self.eval()
                 for data in validateLoader:
                     inputs, outputs = data
-                    outputs = outputs.long()
+                    outputs = outputs
                     # Gets values for loss
                     predictedOutputs = self(inputs)
                     valLoss = lossFn(predictedOutputs, outputs)
                     # Highest value will be our prediction
                     _, predicted = torch.max(predictedOutputs, 1)
                     runningValLoss += valLoss.item()
-                    total += outputs.size(0)
-                    runningAccuracy += (predicted == outputs).sum().item()
+                    for i in range(0, len(outputs[0])):
+                        if (abs(outputs[0][i] - predictedOutputs[0][i])/outputs[0][i] < .1):
+                            runningAccuracy += 1
+                        total += 1
             
             # Calculate Validation Loss Val
             valLossValue = runningValLoss/len(validateLoader)
@@ -194,7 +195,7 @@ print("Output size :",outputSize)
 waveModel = generalModel(inputSize, outputSize)
 
 # Train model
-waveModel.trainn(1500, trainLoader, validateLoader)
+waveModel.trainn(400, trainLoader, validateLoader)
 
 
 waveModel.test(testLoader, testSplit, solovs)
