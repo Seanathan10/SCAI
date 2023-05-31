@@ -4,3 +4,5 @@ import glob2 as g
 for file in g.glob("*.mp3"):
     audioMod.convertWav(file)
     
+# x = audioMod.toArr("unstoppable.wav")
+audioMod.songStats("penumbra.wav")
