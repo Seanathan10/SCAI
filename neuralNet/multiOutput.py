@@ -200,6 +200,9 @@ waveModel.trainn(40, trainLoader, validateLoader)
 
 waveModel.test(testLoader, testSplit, outputSize)
 
+# To actually send something through, just call modelName.forward(input array)
+# If any of the values you want are not floats, you need to convert that, it will return all floats (or doubles? Not quite sure cuz python is silly)
+
 # # Analyze Training success w/ matplotlib
 # epochs = [i for i in range(1, len(globTrainLoss) + 1)]
 # fig = plt.figure(tight_layout=True)
