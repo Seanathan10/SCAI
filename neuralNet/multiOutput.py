@@ -98,33 +98,33 @@ class generalModel(torch.nn.Module):
             globTrainLoss.append(trainLossValue)
             print("Completed training for epoch :", epoch, 'Training Loss is %.4f' %trainLossValue, 'Validation Loss is: %.4f' %valLossValue, 'Accuracy is %d %%' % (accuracy))
 
-    def test(self, testLoader, testSplit, solovs):
+    def test(self, testLoader, testSplit, outLength):
         runningAccuracy = 0
         total = 0
-        checkingArray = [[0 for i in range(len(solovs))] for j in range(len(solovs))]
-        print(solovs)
+        checkingArray = [0 for i in range(outLength)]
+        print("solovs : ", solovs)
         print(type(solovs[0]))
 
         with torch.no_grad():
             for data in testLoader:
                 inputs, outputs = data
-                outputs = outputs.to(torch.float32) 
+                print("test inputs :", inputs)
+                print("test outputs :", outputs)
                 predictedOutputs = self(inputs)
-                _, predicted = torch.max(predictedOutputs, 1)
-                print(predicted.item())
-                print(outputs.item())
-                predIndex = solovs.index(float(predicted.item()))
-                outIndex = solovs.index(int(outputs.item()))
-                checkingArray[predIndex][outIndex] += 1
+                print("predOuts : ", predictedOutputs)
 
-                total += outputs.size(0)
-                runningAccuracy += (predicted == outputs).sum().item()
 
-            checkDf = pd.DataFrame(checkingArray, columns= solovs)
-            checkDf.index = solovs
+                for i in range(0, len(outputs[0])):
+                        if (abs(outputs[0][i] - predictedOutputs[0][i])/outputs[0][i] < .1):
+                            runningAccuracy += 1
+                            print("i :", i)
+                            checkingArray[i] += len(outputs[0])
+                        total += 1
+
             print('Accuracy of the model based on the test set of', testSplit ,'inputs is: %d %%' % (100 * runningAccuracy / total))
             print('           Actual values')
-            print(checkDf)
+            for i in range(0, len(checkingArray)) : 
+                print(str(i+1) + "th output's accuracy : " + str(100 * checkingArray[i]/total) + "%")
 
 # Grabs data and turns it into usable form:
 
@@ -195,10 +195,10 @@ print("Output size :",outputSize)
 waveModel = generalModel(inputSize, outputSize)
 
 # Train model
-waveModel.trainn(400, trainLoader, validateLoader)
+waveModel.trainn(40, trainLoader, validateLoader)
 
 
-waveModel.test(testLoader, testSplit, solovs)
+waveModel.test(testLoader, testSplit, outputSize)
 
 # Analyze Training success w/ matplotlib
 epochs = [i for i in range(1, len(globTrainLoss) + 1)]
