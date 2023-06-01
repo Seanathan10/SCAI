@@ -3,6 +3,8 @@ import audiosegment
 from os import system
 import matplotlib.pyplot as plt
 import os
+import pandas as pd
+import glob2 as g
 
 class audioMod():
     def songStats(audioFile):
@@ -58,5 +60,29 @@ class audioMod():
         x = "ffmpeg -i " + new_file + " -v quiet -codec:a libmp3lame -b:a 32k -n " + new_file[:-3] + "wav"
         system(x)
         os.remove(new_file)
+    
+    def updateCSV(self):
+                
+        df = pd.read_csv("SpotifyFeatures.csv")
+        df["data"] = "0"
+        np.set_printoptions(linewidth=np.inf)
+
+        for file in g.glob("*.wav"):
+            wav_data = self.toArr(file, clean=True)
+            converted_arr = np.array2string(wav_data, precision=0, separator=',')
+            
+            file = (file.replace("_", " ")[:-4]).lower()
+            # print(file)
+            row_num = df[df['track_name'].apply(lambda x: x.lower()) == file].index[0]
+            # print(row_num)-
+            
+            df.at[row_num, "data"] = converted_arr
+        df.to_csv("SpotifyFeatures.csv", index=False)
         
-# 4 samples, 100 size each. one at 0:10, 10 seconds before end, and 2 samples in the middle. Each 0.025 of a second
+    def convert_mp3_to_wav(self):
+        for file in g.glob("*.mp3"):
+            self.convertWav(file)
+            
+    def batch_convert(self):
+        self.convert_mp3_to_wav()
+        self.updateCSV()
