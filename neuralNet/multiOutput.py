@@ -200,14 +200,14 @@ waveModel.trainn(40, trainLoader, validateLoader)
 
 waveModel.test(testLoader, testSplit, outputSize)
 
-# Analyze Training success w/ matplotlib
-epochs = [i for i in range(1, len(globTrainLoss) + 1)]
-fig = plt.figure(tight_layout=True)
-ax = fig.add_subplot(2, 2, 2)
-ax.plot(epochs, globTrainLoss, linewidth=1.5, markersize=0, color='purple')
-ax.set_title("Training Loss")
-ax.set_xlabel('Training Epoch')
-ax.set_ylabel('Loss')
-plt.show()
+# # Analyze Training success w/ matplotlib
+# epochs = [i for i in range(1, len(globTrainLoss) + 1)]
+# fig = plt.figure(tight_layout=True)
+# ax = fig.add_subplot(2, 2, 2)
+# ax.plot(epochs, globTrainLoss, linewidth=1.5, markersize=0, color='purple')
+# ax.set_title("Training Loss")
+# ax.set_xlabel('Training Epoch')
+# ax.set_ylabel('Loss')
+# plt.show()
 
 # Add in global variable so that every test you can plot it in matplotlib
