@@ -81,12 +81,13 @@ class audioMod():
             wav_data = audioMod.toArr(file, clean=False)
             converted_arr = np.array2string(wav_data, precision=0, separator=',')
             
-            file = (file.replace("_", " ")[:-4]).lower()
+            file = (file.replace("_", " ")[:-4])#.lower()
             # print(file)
-            row_num = df[df['track_name'].apply(lambda x: x.lower()) == file].index[0]
-            # print(row_num)-
-            
-            df.at[row_num, "data"] = converted_arr
+            if(file in (df["track_name"].values)):
+                # row_num = df[df["track_name"].apply(lambda x: x.lower()) == file].index[0]
+                row_num = df[df["track_name"] == file].index[0]
+                # print(row_num)
+                df.at[row_num, "data"] = converted_arr
         df.to_csv("SpotifyFeatures.csv", index=False, encoding="utf-8")
         
     def convert_mp3_to_wav():
