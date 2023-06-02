@@ -61,15 +61,24 @@ class audioMod():
         system(x)
         os.remove(new_file)
     
-    def updateCSV(self):
-        df = pd.read_csv("SpotifyFeatures.csv")
+    def updateCSV():
+        df = pd.read_csv("SpotifyFeatures.csv", dtype={"genre" : "string", "artist_name" : "string", 
+                                                       "track_name" : "string", "track_id" : "string",
+                                                       "popularity" : float, "acousticness" : float,
+                                                       "danceability" : float, "duration_ms" : int,
+                                                       "energy" : float, "instrumentalness" : float,
+                                                       "key" : "string", "liveness" : float,
+                                                       "loudness" : float, "mode" : "string",
+                                                       "speechiness" : float, "tempo" : float,
+                                                       "time_signature" : "string", "valence" : float,
+                                                       "data" : "string"})
         np.set_printoptions(linewidth=np.inf)
         
         if("data" not in df.columns):
             df["data"] = "0"
 
         for file in g.glob("*.wav"):
-            wav_data = self.toArr(file, clean=True)
+            wav_data = audioMod.toArr(file, clean=False)
             converted_arr = np.array2string(wav_data, precision=0, separator=',')
             
             file = (file.replace("_", " ")[:-4]).lower()
@@ -80,10 +89,10 @@ class audioMod():
             df.at[row_num, "data"] = converted_arr
         df.to_csv("SpotifyFeatures.csv", index=False)
         
-    def convert_mp3_to_wav(self):
+    def convert_mp3_to_wav():
         for file in g.glob("*.mp3"):
-            self.convertWav(file)
+            audioMod.convertWav(file)
             
-    def batch_convert(self):
-        self.convert_mp3_to_wav()
-        self.updateCSV()
+    def batch_convert():
+        audioMod.convert_mp3_to_wav()
+        audioMod.updateCSV()
