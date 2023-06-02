@@ -71,7 +71,7 @@ class audioMod():
                                                        "loudness" : float, "mode" : "string",
                                                        "speechiness" : float, "tempo" : float,
                                                        "time_signature" : "string", "valence" : float,
-                                                       "data" : "string"})
+                                                       "data" : "string"}, encoding="utf-8")
         np.set_printoptions(linewidth=np.inf)
         
         if("data" not in df.columns):
@@ -87,7 +87,16 @@ class audioMod():
             # print(row_num)-
             
             df.at[row_num, "data"] = converted_arr
-        df.to_csv("SpotifyFeatures.csv", index=False)
+        df.to_csv("SpotifyFeatures.csv", index=False, dtype={"genre" : "string", "artist_name" : "string", 
+                                                       "track_name" : "string", "track_id" : "string",
+                                                       "popularity" : float, "acousticness" : float,
+                                                       "danceability" : float, "duration_ms" : int,
+                                                       "energy" : float, "instrumentalness" : float,
+                                                       "key" : "string", "liveness" : float,
+                                                       "loudness" : float, "mode" : "string",
+                                                       "speechiness" : float, "tempo" : float,
+                                                       "time_signature" : "string", "valence" : float,
+                                                       "data" : "string"}, encoding="utf-8")
         
     def convert_mp3_to_wav():
         for file in g.glob("*.mp3"):
