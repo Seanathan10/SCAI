@@ -102,8 +102,6 @@ class generalModel(torch.nn.Module):
         runningAccuracy = 0
         total = 0
         checkingArray = [0 for i in range(outLength)]
-        print("solovs : ", solovs)
-        print(type(solovs[0]))
 
         with torch.no_grad():
             for data in testLoader:
@@ -160,10 +158,6 @@ testLoader = DataLoader(testSet, batch_size=1)
 # Sets input and output size for future models
 print(input.shape)
 inputSize = list(input.shape)[1]
-solovs = []
-for i in actualDict['solov']:
-    if not i in solovs:
-        solovs.append(i)
 
 
 # TRAINING AND TESTING MODEL!!!
