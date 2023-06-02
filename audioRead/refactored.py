@@ -15,6 +15,8 @@ import asyncio
 from youtubesearchpython.__future__ import VideosSearch
 import re
 
+import pandas as pd
+
 from audRead import audioMod
 
 class Track():
@@ -40,7 +42,8 @@ class Track():
 		self.valence = valence
 
 	def __str__( self ):
-		return f"{ self.track_name } by { self.artist_name }"
+		# return f"{ self.track_name } by { self.artist_name }"
+		return f"{ self.track_name }"
 
 
 # def download_mp3( threads=4 ):
@@ -154,7 +157,24 @@ async def SpotifyFeatures():
 
 	print( count )
 
+	df = pd.read_csv( "SpotifyFeatures.csv", dtype={"genre" : "string", "artist_name" : "string", 
+                                                       "track_name" : "string", "track_id" : "string",
+                                                       "popularity" : float, "acousticness" : float,
+                                                       "danceability" : float, "duration_ms" : int,
+                                                       "energy" : float, "instrumentalness" : float,
+                                                       "key" : "string", "liveness" : float,
+                                                       "loudness" : float, "mode" : "string",
+                                                       "speechiness" : float, "tempo" : float,
+                                                       "time_signature" : "string", "valence" : float,
+                                                       "data" : "string"}, encoding="utf-8")
+	
+	# df["track_name"] = df["track_name"].str.lower()
+	
+	# print( df["genre"].unique() )
+	# print( df["track_name"].unique() )
+
 	# print( tracks[0] )
+	df["track_name"][0]
 
 	open( 'searching.txt', 'w', encoding='utf-8' ).close
 	
