@@ -62,10 +62,11 @@ class audioMod():
         os.remove(new_file)
     
     def updateCSV(self):
-                
         df = pd.read_csv("SpotifyFeatures.csv")
-        df["data"] = "0"
         np.set_printoptions(linewidth=np.inf)
+        
+        if("data" not in df.columns):
+            df["data"] = "0"
 
         for file in g.glob("*.wav"):
             wav_data = self.toArr(file, clean=True)
