@@ -127,28 +127,11 @@ class generalModel(torch.nn.Module):
                 print(str(i+1) + "th output's accuracy : " + str(100 * checkingArray[i]/total) + "%")
 
 # Grabs data and turns it into usable form:
+df = pd.read_csv("oldTestData.csv")
+input = df.loc[:, ["waveHeight"]]
+output = df.loc[:, ["horizontalInundation", "solovievIdentity"]]
 
-# Grabs raw list of dictionaries
-everythingDict=[*csv.DictReader(open('oldTestData.csv'))]
-actualDict = {}
-actualDict['solov'] = []
-actualDict['height'] = []
-actualDict['inundate'] = []
-
-# Turns list of dictionaries into dictionary of lists
-for i in range(0, len(everythingDict)):
-    if float(everythingDict[i]['solovievIdentity']) - math.floor(float(everythingDict[i]['solovievIdentity'])) > .5:
-        tempSolov = math.ceil(float(everythingDict[i]['solovievIdentity']))
-    else:
-        tempSolov = math.floor(float(everythingDict[i]['solovievIdentity']))
-    actualDict['solov'].append(tempSolov)
-    actualDict['height'].append(float(everythingDict[i]['waveHeight']))
-    actualDict['inundate'].append(float(everythingDict[i]['horizontalInundation']))
-
-# Creates Pandas dataframe for input and output
-df = pd.DataFrame(actualDict)
-input = df.loc[:, ['height']]
-output = df.loc[:, ['inundate', 'solov']]
+print(output)
 
 # Turns pandas dataframes into tensors and Tensor Dataset
 input = torch.Tensor(input.to_numpy())
