@@ -157,25 +157,17 @@ for i in range(0, len(input["data"])):
 print(df)
 
 print("input : ", len(input["data"][2]))
-inputArr = input.to_numpy()
-print(inputArr)
 
-# HELP ME HERE
-# right now it's an nparray with lists as the elements, and it's 1xN, where each element is a list of length 256
-# I need to change this to be 256xN where each element is one of the items that used to be in the list
-# See the output for how it should be formatted (input is like, 11 or 10xN rather than 256xN but yous hould get the point)
-print(output.to_numpy())
-
-
+inputArr = np.zeros((len(input["data"]), len(input["data"][0])))
+for i in range(0, len(input["data"])):
+    for j in range(0, len(input["data"][0])):
+        inputArr[i][j] = input["data"][i][j]
 
 # Turns pandas dataframes into tensors and Tensor Dataset
 input = torch.Tensor(inputArr)
 print("input : ", input)
 output = torch.Tensor(output.to_numpy())
 print("output : ", output)
-
-
-
 
 outputSize = torch.Tensor.dim(output)
 data = TensorDataset(input, output)
