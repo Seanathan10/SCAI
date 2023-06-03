@@ -125,69 +125,87 @@ class generalModel(torch.nn.Module):
                 print(str(i+1) + "th output's accuracy : " + str(100 * checkingArray[i]/total) + "%")
 
 # Grabs data and turns it into usable form:
-df = pd.read_csv("oldTestData.csv")
-input = df.loc[:, ["waveHeight"]]
-output = df.loc[:, ["horizontalInundation", "solovievIdentity"]]
+df = pd.read_csv("../audioRead/SpotifyFeatures.csv")
 
-print(output)
+df = df.loc[(df["data"] != 0)]
+
+
+
+input = df.loc[:, ["genre", "artist_name", "track_name","track_id", "popularity","acousticness", "danceability","duration_ms", "energy","instrumentalness", "key","liveness", "loudness","mode", "speechiness","tempo", "time_signature", "valence"]]
+output = df.loc[:, ["data"]]
+
+# print(output)
+# print(input)
+
+# print(output["data"][len(output["data"])-1])
+
+
+for i in range(0, len(output["data"])):
+    output["data"][i] = eval(output["data"][i])
+
+print(df)
 
 # Turns pandas dataframes into tensors and Tensor Dataset
-input = torch.Tensor(input.to_numpy())
+# input = torch.Tensor(input.to_numpy())
 # print("input : ", input)
-output = torch.Tensor(output.to_numpy())
+# output = torch.Tensor(output.to_numpy())
 # print("output : ", output)
-outputSize = torch.Tensor.dim(output)
-data = TensorDataset(input, output)
-
-# Split into a training, validation and testing set
-trainBatchSize = 10
-testSplit = int(len(input)*0.25)
-# print(testSplit)
-trainSplit = int(len(input)*0.6)
-# print(trainSplit)
-validateSplit = len(input) - trainSplit - testSplit
-# print(validateSplit)
-# print(len(input))
-trainSet, validateSet, testSet = random_split(data, [trainSplit, validateSplit, testSplit])
-
-# Get data in loadable form to go into model
-trainLoader = DataLoader(trainSet, batch_size=trainBatchSize, shuffle=True)
-validateLoader = DataLoader(validateSet, batch_size=1)
-testLoader = DataLoader(testSet, batch_size=1)
-
-# Sets input and output size for future models
-print(input.shape)
-inputSize = list(input.shape)[1]
 
 
-# TRAINING AND TESTING MODEL!!!
-
-# Actually put it into the model
-
-# For loading current one
-# waveModel = generalModel.loadModel(inputSize, outputSize, "waveModel.pth")
-# For creating new one
-print("input size :", inputSize)
-print("Output size :",outputSize)
-waveModel = generalModel(inputSize, outputSize)
-
-# Train model
-waveModel.trainn(40, trainLoader, validateLoader)
 
 
-waveModel.test(testLoader, testSplit, outputSize)
+# outputSize = torch.Tensor.dim(output)
+# data = TensorDataset(input, output)
 
-# To actually send something through, just call modelName.forward(input array)
-# If any of the values you want are not floats, you need to convert that, it will return all floats (or doubles? Not quite sure cuz python is silly)
+# # Split into a training, validation and testing set
+# trainBatchSize = 10
+# testSplit = int(len(input)*0.25)
+# # print(testSplit)
+# trainSplit = int(len(input)*0.6)
+# # print(trainSplit)
+# validateSplit = len(input) - trainSplit - testSplit
+# # print(validateSplit)
+# # print(len(input))
+# trainSet, validateSet, testSet = random_split(data, [trainSplit, validateSplit, testSplit])
 
-# # Analyze Training success w/ matplotlib
-# epochs = [i for i in range(1, len(globTrainLoss) + 1)]
-# fig = plt.figure(tight_layout=True)
-# ax = fig.add_subplot(2, 2, 2)
-# ax.plot(epochs, globTrainLoss, linewidth=1.5, markersize=0, color='purple')
-# ax.set_title("Training Loss")
-# ax.set_xlabel('Training Epoch')
-# ax.set_ylabel('Loss')
-# plt.show()
+# # Get data in loadable form to go into model
+# trainLoader = DataLoader(trainSet, batch_size=trainBatchSize, shuffle=True)
+# validateLoader = DataLoader(validateSet, batch_size=1)
+# testLoader = DataLoader(testSet, batch_size=1)
 
-# Add in global variable so that every test you can plot it in matplotlib
+# # Sets input and output size for future models
+# print(input.shape)
+# inputSize = list(input.shape)[1]
+
+
+# # TRAINING AND TESTING MODEL!!!
+
+# # Actually put it into the model
+
+# # For loading current one
+# # waveModel = generalModel.loadModel(inputSize, outputSize, "waveModel.pth")
+# # For creating new one
+# print("input size :", inputSize)
+# print("Output size :",outputSize)
+# waveModel = generalModel(inputSize, outputSize)
+
+# # Train model
+# waveModel.trainn(40, trainLoader, validateLoader)
+
+
+# waveModel.test(testLoader, testSplit, outputSize)
+
+# # To actually send something through, just call modelName.forward(input array)
+# # If any of the values you want are not floats, you need to convert that, it will return all floats (or doubles? Not quite sure cuz python is silly)
+
+# # # Analyze Training success w/ matplotlib
+# # epochs = [i for i in range(1, len(globTrainLoss) + 1)]
+# # fig = plt.figure(tight_layout=True)
+# # ax = fig.add_subplot(2, 2, 2)
+# # ax.plot(epochs, globTrainLoss, linewidth=1.5, markersize=0, color='purple')
+# # ax.set_title("Training Loss")
+# # ax.set_xlabel('Training Epoch')
+# # ax.set_ylabel('Loss')
+# # plt.show()
+
+# # Add in global variable so that every test you can plot it in matplotlib
