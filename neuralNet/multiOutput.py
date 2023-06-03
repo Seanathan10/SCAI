@@ -12,9 +12,11 @@ class generalModel(torch.nn.Module):
     # Initialize model
     def __init__(self, inputSize, outputSize):
         super(generalModel, self).__init__()
-        self.linear1 = torch.nn.Linear(inputSize, 100)
-        self.linear2 = torch.nn.Linear(100, 50)
-        self.linear3 = torch.nn.Linear(50, outputSize)
+        self.linear1 = torch.nn.Linear(inputSize, 512)
+        self.linear2 = torch.nn.Linear(512, 256)
+        self.linear3 = torch.nn.Linear(256, 128)
+        self.linear4 = torch.nn.Linear(128, 50)
+        self.linear5 = torch.nn.Linear(50, outputSize)
 
         self.activation = torch.nn.LeakyReLU()
 
@@ -25,6 +27,10 @@ class generalModel(torch.nn.Module):
         x = self.linear2(x)
         x = self.activation(x)
         x = self.linear3(x)
+        x = self.activation(x)
+        x = self.linear4(x)
+        x = self.activation(x)
+        x = self.linear5(x)
         return x
     
     # Saves model to file
@@ -33,7 +39,7 @@ class generalModel(torch.nn.Module):
         torch.save(self.state_dict(), path)
 
     # Loads model from file
-    def loadModel(inputSize, outputSize, path):
+    def loadModel(self, inputSize, outputSize, path):
         model = generalModel(inputSize, outputSize)
         model.load_state_dict(torch.load("./" + path))
         model.eval()
@@ -41,7 +47,7 @@ class generalModel(torch.nn.Module):
 
     # Function for training the model
     def trainn(self, numEpochs, trainLoader, validateLoader):
-        lossFn = torch.nn.L1Loss()
+        lossFn = torch.nn.MSELoss()
         optimizer = torch.optim.Adam(self.parameters(), lr=0.01, weight_decay=0.0001)
         bestAccuracy = 0.0
         
@@ -52,6 +58,7 @@ class generalModel(torch.nn.Module):
             runningAccuracy = 0.0
             runningValLoss = 0.0
             total = 0
+
 
             # Actually trains
             for data in trainLoader:
@@ -77,10 +84,9 @@ class generalModel(torch.nn.Module):
                     predictedOutputs = self(inputs)
                     valLoss = lossFn(predictedOutputs, outputs)
                     # Highest value will be our prediction
-                    _, predicted = torch.max(predictedOutputs, 1)
                     runningValLoss += valLoss.item()
-                    for i in range(0, len(outputs[0])):
-                        if (abs(outputs[0][i] - predictedOutputs[0][i])/outputs[0][i] < .1):
+                    for i in range(0, len(predictedOutputs[0])):
+                        if (abs(outputs[0][i] - predictedOutputs[0][i])/abs(outputs[0][i]) < .1):
                             runningAccuracy += 1
                         total += 1
             
@@ -91,7 +97,8 @@ class generalModel(torch.nn.Module):
 
             # Save model if accuracy is best
             if accuracy > bestAccuracy:
-                self.saveModel("waveModel.pth")
+                print("saved model with :", accuracy, "accuracy.")
+                self.saveModel("bestInTrain.pth")
                 bestAccuracy = accuracy
 
             # Print current Epoch stats
@@ -111,18 +118,19 @@ class generalModel(torch.nn.Module):
                 predictedOutputs = self(inputs)
                 print("predOuts : ", predictedOutputs)
 
-
                 for i in range(0, len(outputs[0])):
-                        if (abs(outputs[0][i] - predictedOutputs[0][i])/outputs[0][i] < .1):
-                            runningAccuracy += 1
-                            print("i :", i)
-                            checkingArray[i] += len(outputs[0])
-                        total += 1
+                    if (abs(outputs[0][i] - predictedOutputs[0][i])/abs(outputs[0][i]) < .1):
+                        runningAccuracy += 1
+                        print("i :", i)
+                        print("   pred : ", predictedOutputs[0][i])
+                        print("   actu : ", outputs[0][i])
+                        checkingArray[i] += len(outputs[0])
+                    total += 1
 
-            print('Accuracy of the model based on the test set of', testSplit ,'inputs is: %d %%' % (100 * runningAccuracy / total))
-            print('           Actual values')
+            print('Accuracy of the model based on the test set of', testSplit ,'inputs is: ',(100 * runningAccuracy / total), "%")
+            print('Actual values :')
             for i in range(0, len(checkingArray)) : 
-                print(str(i+1) + "th output's accuracy : " + str(100 * checkingArray[i]/total) + "%")
+                print("    " +str(i+1) + "th output's accuracy : " + str(100 * checkingArray[i]/total) + "%")
 
 # Grabs data and turns it into usable form:
 df = pd.read_csv("../audioRead/SpotifyFeatures.csv")
@@ -149,14 +157,13 @@ input = df.loc[:, ["data"]]
 # print(df["valence"][0].dtype)
 # print("\n\n\n")
 
-print(input.dtypes)
+print("input dtpyes : ", input.dtypes)
 
 for i in range(0, len(input["data"])):
     input["data"][i] = eval(input["data"][i])
 
-print(df)
 
-print("input : ", len(input["data"][2]))
+print("length of data array : ", len(input["data"][2]))
 
 inputArr = np.zeros((len(input["data"]), len(input["data"][0])))
 for i in range(0, len(input["data"])):
@@ -165,11 +172,11 @@ for i in range(0, len(input["data"])):
 
 # Turns pandas dataframes into tensors and Tensor Dataset
 input = torch.Tensor(inputArr)
-print("input : ", input)
+print("input shape: ", input.shape)
 output = torch.Tensor(output.to_numpy())
-print("output : ", output)
+print("output shape: ", output.shape)
 
-outputSize = torch.Tensor.dim(output)
+outputSize = list(output.shape)[1]
 data = TensorDataset(input, output)
 
 # Split into a training, validation and testing set
@@ -189,7 +196,6 @@ validateLoader = DataLoader(validateSet, batch_size=1)
 testLoader = DataLoader(testSet, batch_size=1)
 
 # Sets input and output size for future models
-print(input.shape)
 inputSize = list(input.shape)[1]
 
 
@@ -202,13 +208,16 @@ inputSize = list(input.shape)[1]
 # For creating new one
 print("input size :", inputSize)
 print("Output size :",outputSize)
-waveModel = generalModel(inputSize, outputSize)
+audioModel = generalModel(inputSize, outputSize)
 
 # Train model
-waveModel.trainn(40, trainLoader, validateLoader)
+audioModel.trainn(140, trainLoader, validateLoader)
+
+# Load best
+audioModel.loadModel(inputSize, outputSize, "bestInTrain.pth")
 
 
-waveModel.test(testLoader, testSplit, outputSize)
+audioModel.test(testLoader, testSplit, outputSize)
 
 # To actually send something through, just call modelName.forward(input array)
 # If any of the values you want are not floats, you need to convert that, it will return all floats (or doubles? Not quite sure cuz python is silly)
