@@ -127,85 +127,108 @@ class generalModel(torch.nn.Module):
 # Grabs data and turns it into usable form:
 df = pd.read_csv("../audioRead/SpotifyFeatures.csv")
 
-df = df.loc[(df["data"] != 0)]
+df.drop(index=df.loc[df["data"] == 0].index, inplace=True)
+df.drop(index=df.loc[df["data"] == '0'].index, inplace=True)
 
+df.reset_index(inplace=True)
 
+output = df.loc[:, ["popularity","acousticness", "danceability", "energy","instrumentalness","liveness", "loudness", "speechiness","tempo", "valence"]]
+input = df.loc[:, ["data"]]
 
-input = df.loc[:, ["genre", "artist_name", "track_name","track_id", "popularity","acousticness", "danceability","duration_ms", "energy","instrumentalness", "key","liveness", "loudness","mode", "speechiness","tempo", "time_signature", "valence"]]
-output = df.loc[:, ["data"]]
+# print("\n\n\ntypes :")
+# print(df["popularity"][0].dtype)
+# print(df["acousticness"][0].dtype)
+# print(df["danceability"][0].dtype)
+# print(df["popularity"][0].dtype)
+# print(df["energy"][0].dtype)
+# print(df["instrumentalness"][0].dtype)
+# print(df["liveness"][0].dtype)
+# print(df["loudness"][0].dtype)
+# print(df["speechiness"][0].dtype)
+# print(df["tempo"][0].dtype)
+# print(df["valence"][0].dtype)
+# print("\n\n\n")
 
-# print(output)
-# print(input)
+print(input.dtypes)
 
-# print(output["data"][len(output["data"])-1])
-
-
-for i in range(0, len(output["data"])):
-    output["data"][i] = eval(output["data"][i])
+for i in range(0, len(input["data"])):
+    input["data"][i] = eval(input["data"][i])
 
 print(df)
 
+print("input : ", len(input["data"][2]))
+inputArr = input.to_numpy()
+print(inputArr)
+
+# HELP ME HERE
+# right now it's an nparray with lists as the elements, and it's 1xN, where each element is a list of length 256
+# I need to change this to be 256xN where each element is one of the items that used to be in the list
+# See the output for how it should be formatted (input is like, 11 or 10xN rather than 256xN but yous hould get the point)
+print(output.to_numpy())
+
+
+
 # Turns pandas dataframes into tensors and Tensor Dataset
-# input = torch.Tensor(input.to_numpy())
-# print("input : ", input)
-# output = torch.Tensor(output.to_numpy())
-# print("output : ", output)
+input = torch.Tensor(inputArr)
+print("input : ", input)
+output = torch.Tensor(output.to_numpy())
+print("output : ", output)
 
 
 
 
-# outputSize = torch.Tensor.dim(output)
-# data = TensorDataset(input, output)
+outputSize = torch.Tensor.dim(output)
+data = TensorDataset(input, output)
 
-# # Split into a training, validation and testing set
-# trainBatchSize = 10
-# testSplit = int(len(input)*0.25)
-# # print(testSplit)
-# trainSplit = int(len(input)*0.6)
-# # print(trainSplit)
-# validateSplit = len(input) - trainSplit - testSplit
-# # print(validateSplit)
-# # print(len(input))
-# trainSet, validateSet, testSet = random_split(data, [trainSplit, validateSplit, testSplit])
+# Split into a training, validation and testing set
+trainBatchSize = 10
+testSplit = int(len(input)*0.25)
+# print(testSplit)
+trainSplit = int(len(input)*0.6)
+# print(trainSplit)
+validateSplit = len(input) - trainSplit - testSplit
+# print(validateSplit)
+# print(len(input))
+trainSet, validateSet, testSet = random_split(data, [trainSplit, validateSplit, testSplit])
 
-# # Get data in loadable form to go into model
-# trainLoader = DataLoader(trainSet, batch_size=trainBatchSize, shuffle=True)
-# validateLoader = DataLoader(validateSet, batch_size=1)
-# testLoader = DataLoader(testSet, batch_size=1)
+# Get data in loadable form to go into model
+trainLoader = DataLoader(trainSet, batch_size=trainBatchSize, shuffle=True)
+validateLoader = DataLoader(validateSet, batch_size=1)
+testLoader = DataLoader(testSet, batch_size=1)
 
-# # Sets input and output size for future models
-# print(input.shape)
-# inputSize = list(input.shape)[1]
-
-
-# # TRAINING AND TESTING MODEL!!!
-
-# # Actually put it into the model
-
-# # For loading current one
-# # waveModel = generalModel.loadModel(inputSize, outputSize, "waveModel.pth")
-# # For creating new one
-# print("input size :", inputSize)
-# print("Output size :",outputSize)
-# waveModel = generalModel(inputSize, outputSize)
-
-# # Train model
-# waveModel.trainn(40, trainLoader, validateLoader)
+# Sets input and output size for future models
+print(input.shape)
+inputSize = list(input.shape)[1]
 
 
-# waveModel.test(testLoader, testSplit, outputSize)
+# TRAINING AND TESTING MODEL!!!
 
-# # To actually send something through, just call modelName.forward(input array)
-# # If any of the values you want are not floats, you need to convert that, it will return all floats (or doubles? Not quite sure cuz python is silly)
+# Actually put it into the model
 
-# # # Analyze Training success w/ matplotlib
-# # epochs = [i for i in range(1, len(globTrainLoss) + 1)]
-# # fig = plt.figure(tight_layout=True)
-# # ax = fig.add_subplot(2, 2, 2)
-# # ax.plot(epochs, globTrainLoss, linewidth=1.5, markersize=0, color='purple')
-# # ax.set_title("Training Loss")
-# # ax.set_xlabel('Training Epoch')
-# # ax.set_ylabel('Loss')
-# # plt.show()
+# For loading current one
+# waveModel = generalModel.loadModel(inputSize, outputSize, "waveModel.pth")
+# For creating new one
+print("input size :", inputSize)
+print("Output size :",outputSize)
+waveModel = generalModel(inputSize, outputSize)
 
-# # Add in global variable so that every test you can plot it in matplotlib
+# Train model
+waveModel.trainn(40, trainLoader, validateLoader)
+
+
+waveModel.test(testLoader, testSplit, outputSize)
+
+# To actually send something through, just call modelName.forward(input array)
+# If any of the values you want are not floats, you need to convert that, it will return all floats (or doubles? Not quite sure cuz python is silly)
+
+# # Analyze Training success w/ matplotlib
+# epochs = [i for i in range(1, len(globTrainLoss) + 1)]
+# fig = plt.figure(tight_layout=True)
+# ax = fig.add_subplot(2, 2, 2)
+# ax.plot(epochs, globTrainLoss, linewidth=1.5, markersize=0, color='purple')
+# ax.set_title("Training Loss")
+# ax.set_xlabel('Training Epoch')
+# ax.set_ylabel('Loss')
+# plt.show()
+
+# Add in global variable so that every test you can plot it in matplotlib
