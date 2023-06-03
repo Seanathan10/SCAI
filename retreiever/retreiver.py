@@ -9,6 +9,5 @@ df['data'] = df['data'].apply(ast.literal_eval)
 for i in range(0, len(df['data'])):
     print( df['data'][i] )
     print( i )
-    # df['data'][i] = df['data'][i].split(',')
 
 
