@@ -97,3 +97,10 @@ class audioMod():
     def batch_convert():
         audioMod.convert_mp3_to_wav()
         audioMod.updateCSV()
+        
+    def model_record():
+        fileName = input("Enter file name or directory of the mp3 or wav file: ")
+        audioMod.convertWav(fileName)
+        a = audioMod.toArr(fileName)
+
+        return a
