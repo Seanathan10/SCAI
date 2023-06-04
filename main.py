@@ -34,11 +34,17 @@ outputSize = 10
 audioModel = gm(inputSize, outputSize)
 audioModel = audioModel.loadModel(inputSize, outputSize, "./neuralNet/bestInTrain.pth")
 
+directory = input("Please enter a directory: ")
 
 song_dict = load_songs(directory)
+print("Done Loading")
+
 run_model(song_dict)
+print("Model finished")
+
 
 # list of strings
-playlist = sim.build_playlist(song_dict, 10)
+play_len = int(input("Please enter how many songs you want in the playlist: "))
+playlist = sim.build_playlist(song_dict, play_len)
 
-print(playlist)
+print("\n".join(playlist))

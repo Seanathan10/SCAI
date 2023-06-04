@@ -67,7 +67,7 @@ def build_playlist(song_dict, playlist_length):
             best_error = cumulative_error
             best_song = song
     
-    smallest_error_list = get_n_smallest_errors(best_song, song_dict, playlist_length)
+    smallest_error_list = get_n_smallest_errors(song_dict[best_song], song_dict, playlist_length)
     best_playlist = get_playlist(smallest_error_list)
 
     return best_playlist
