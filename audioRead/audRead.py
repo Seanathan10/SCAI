@@ -17,8 +17,8 @@ class audioMod():
         song4 = np.fft.rfft(song2)
         # print(song)
         
-        x = np.arange(0,len(song1))
-        y = np.arange(0,len(song2))
+        x = np.arange(0, len(song1))
+        y = np.arange(0, len(song2))
         w = np.arange(0, len(song3))
         z = np.arange(0, len(song4))
         ax1 = fig.add_subplot(2, 2, 1)
