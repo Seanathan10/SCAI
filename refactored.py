@@ -82,6 +82,33 @@ async def HandleMP3( Link, SongName ):
 
 
 
+async def HandleYTMP3( Link ):
+	try:
+		dl_file = YouTube( Link, on_progress_callback=on_progress )
+
+		audio = dl_file.streams.get_audio_only()
+		# save_dir = 'mp3s/'
+		# save_dir = '.'
+
+		
+		print( f"({ audio.bitrate / 1000 } kbps) \"{ dl_file.title }\" downloading..." )
+
+		outfile = audio.download()
+
+		file_base, file_ext = os.path.splitext( outfile )
+		final_file = file_base + '.mp3'
+		os.rename( outfile, final_file )
+		
+		# print( f"{ dl_file.title } downloaded" )
+	except exceptions.AgeRestrictedError:
+		print( f"{dl_file.title} is age restricted - SKIPPING" )
+	except OSError:
+		print( f"Error writing this song: {dl_file.title}"  )
+	except exceptions:
+		print( f"Some other YouTube error with song: {dl_file.title}" )
+
+
+
 
 async def SearchW_API( Query, YouTube ):
 	search_response = YouTube.search().list(
@@ -234,7 +261,7 @@ async def YouTubePlaylist( PlaylistID ):
 	for link in YTPlayList.video_urls:
 		try:
 			print( link )
-			await HandleMP3( str( link ) )
+			await HandleYTMP3( str( link ) )
 		except TypeError:
 			print( "Some regex search error somewhere" )
 
