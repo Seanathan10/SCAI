@@ -106,3 +106,14 @@ class audioMod():
         a = audioMod.toArr(fileName)
 
         return a
+    
+    def dir_record(directory):
+        song_dir = {}
+        for filename in os.listdir(directory):
+            if(fileName[-3:0] == "mp3"):
+                audioMod.convertWav(filename)
+                filename = filename[::-3] + "wav"
+            a = audioMod.toArr(filename)
+            name = os.path.splitext(filename)
+            song_dir[name] = a
+        return song_dir
