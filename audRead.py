@@ -62,7 +62,7 @@ class audioMod():
         os.remove(new_file)
     
     def updateCSV():
-        df = pd.read_csv("SpotifyFeatures.csv", dtype={"genre" : "string", "artist_name" : "string", 
+        df = pd.read_csv("./SpotifyFeatures.csv/", dtype={"genre" : "string", "artist_name" : "string", 
                                                        "track_name" : "string", "track_id" : "string",
                                                        "popularity" : float, "acousticness" : float,
                                                        "danceability" : float, "duration_ms" : int,
@@ -88,7 +88,7 @@ class audioMod():
                 row_num = df[df["track_name"] == file].index[0]
                 # print(row_num)
                 df.at[row_num, "data"] = converted_arr
-        df.to_csv("SpotifyFeatures.csv", index=False, encoding="utf-8")
+        df.to_csv("./SpotifyFeatures.csv/", index=False, encoding="utf-8")
         
     def convert_mp3_to_wav():
         for file in g.glob("*.mp3"):
@@ -97,10 +97,12 @@ class audioMod():
     def batch_convert():
         audioMod.convert_mp3_to_wav()
         audioMod.updateCSV()
-        
+    
     def model_record():
         fileName = input("Enter file name or directory of the mp3 or wav file: ")
-        audioMod.convertWav(fileName)
+        if(fileName[-3:0] == "mp3"):
+            audioMod.convertWav(fileName)
+            fileName = fileName[::-3] + "wav"
         a = audioMod.toArr(fileName)
 
         return a

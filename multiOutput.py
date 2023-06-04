@@ -133,7 +133,7 @@ class generalModel(torch.nn.Module):
             print('Actual values :')
             for i in range(0, len(checkingArray)) : 
                 print("    " + columnName[i].ljust(16) + " : " + str(i+1).rjust(2) + "th output's accuracy : " + str(100 * checkingArray[i]/total) + "%")
-
+'''
 # Grabs data and turns it into usable form:
 df = pd.read_csv("../audioRead/SpotifyFeatures.csv")
 
@@ -257,3 +257,4 @@ audioModel.test(testLoader, testSplit, outputSize, colNames)
 # plt.show()
 
 # Add in global variable so that every test you can plot it in matplotlib
+'''
