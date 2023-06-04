@@ -10,6 +10,7 @@ audRead.cpython-311.pyc
 audRead.cpython-39.pyc
 audRead.cpython-38.pyc
 *.mp3
+*.mp4
 *.wav
 IDs.txt
 searching.txt
