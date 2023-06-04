@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import random
 import matplotlib.pyplot as plt
-import seaborn as sns
 
 
 df = pd.read_csv("SpotifyFeatures.csv", na_filter = False)
@@ -17,6 +16,8 @@ for i in range(len(mins)):
     column_min = mins[i] 
     column_max = maxs[i] 
     extremes[column] = (column_min, column_max)
+
+print(extremes)
 
 ### PARAMETERS AND CONSTANTS ###
 WEIGHTS = {
