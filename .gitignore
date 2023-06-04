@@ -1,5 +1,9 @@
 # ignores datafile
 SpotifyFeatures.csv
+SpotifyFeaturesClean.csv
+SpotifyFeaturesOriginal.csv
+CSVs/
+songnames.txt
 SCAI is No Limit S23.code-workspace
 samples
 audRead.cpython-311.pyc
