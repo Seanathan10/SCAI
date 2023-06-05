@@ -163,17 +163,14 @@ input = df.loc[:, ["data"]]
 # print("\n\n\n")
 
 # Standardize all output values to be from 0 to 10
-print(output["loudness"])
 j = 0
 for i in output["loudness"]:
     output["loudness"][j] = -1 * i
     j+=1
-print(output["loudness"])
 
 i = 0
 for column in output:
     maximum = max(output[column])
-    print(maximum)
     for item in range(0, len(output[column])):
         output[column][item] = 10*output[column][item]/maximum
     i+=1
@@ -236,11 +233,11 @@ print("Output size :",outputSize)
 audioModel = generalModel(inputSize, outputSize)
 
 # Train model
-audioModel.trainn(1024, trainLoader, validateLoader)
-audioModel.saveModel("finalTrain.pth")
+# audioModel.trainn(1024, trainLoader, validateLoader)
+# audioModel.saveModel("finalTrain.pth")
 
 # Load best
-# audioModel = audioModel.loadModel(inputSize, outputSize, "bestInTrain.pth")
+audioModel = audioModel.loadModel(inputSize, outputSize, "bestInTrain.pth")
 audioModel.test(testLoader, testSplit, outputSize, colNames)
 
 # To actually send something through, just call modelName.forward(input array)
