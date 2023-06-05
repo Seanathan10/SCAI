@@ -6,6 +6,7 @@ import numpy as np
 from torch.utils.data import random_split, TensorDataset, DataLoader
 import math
 
+
 totalOutputs = 10
 
 globTrainLoss = []
