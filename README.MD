@@ -4,7 +4,7 @@
 
 ## How To Use
 
-1. Place an .mp3 or .wav audio file in the same folder as main.py
+1. Place an gong .mp3 or .wav file in a subdirectory within the program folder.
 2. Open command line
 3. Navigate to the directory that the main.py file is located
 4. Run the main.py file using python 3
